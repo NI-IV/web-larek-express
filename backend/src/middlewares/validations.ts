@@ -1,8 +1,5 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 
-
-
-// Схема валидации для создания заказа
 export const createOrderValidation = celebrate({
   [Segments.BODY]: Joi.object().keys({
     payment: Joi.string().valid('card', 'online').required(),
