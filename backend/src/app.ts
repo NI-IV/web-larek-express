@@ -4,6 +4,7 @@ import path from 'path';
 import mongoose from 'mongoose';
 import express from 'express';
 import productsRouter from './routes/products';
+import ordersRouter from './routes/orders';
 
 const PORT = process.env.PORT || 3000;
 const { DB_ADDRESS } = process.env;
@@ -27,7 +28,8 @@ mongoose.connect(DB_ADDRESS)
     console.error('Error connecting to MongoDB:', err);
   });
 
-app.use('/', productsRouter);
+app.use('/product', productsRouter);
+app.use('/order', ordersRouter);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
