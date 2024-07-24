@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { Error as MongooseError } from 'mongoose';
 import { faker } from '@faker-js/faker';
 import Product from '../models/product';
-import BadRequestError from "../errors/bad-request-error";
-import ConflictError from "../errors/conflict-error";
-import InternalServerError from "../errors/internal-server-error";
+import BadRequestError from '../errors/bad-request-error';
+import ConflictError from '../errors/conflict-error';
+import InternalServerError from '../errors/internal-server-error';
 
 // Валидация Email
 const isValidEmail = (email: string) => /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email);
@@ -12,9 +12,11 @@ const isValidEmail = (email: string) => /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(e
 // Валидация телефона
 const isValidPhone = (phone: string) => /^\+7\d{10}$/.test(phone);
 
-export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
-  const { payment, email, phone, address, total, items } = req.body;
-  const phoneFormated: string = phone.replace(/[^\d+]/g, '');
+const createOrder = async (req: Request, res: Response, next: NextFunction) => {
+  const {
+    payment, email, phone, address, total, items,
+  } = req.body;
+  const phoneFormatted: string = phone.replace(/[^\d+]/g, '');
 
   try {
     if (!['card', 'online'].includes(payment)) {
@@ -23,8 +25,8 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     if (!isValidEmail(email)) {
       return next(new BadRequestError('Invalid email'));
     }
-    if (!isValidPhone(phoneFormated)) {
-      return next(new BadRequestError(`Invalid phone number`));
+    if (!isValidPhone(phoneFormatted)) {
+      return next(new BadRequestError(`Invalid phone number ${phoneFormatted}`));
     }
     if (!address) {
       return next(new BadRequestError('Address is required'));
@@ -36,7 +38,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
       return next(new BadRequestError('Invalid total amount'));
     }
 
-    const products = await Product.find({ '_id': { $in: items } });
+    const products = await Product.find({ _id: { $in: items } });
 
     if (products.length !== items.length) {
       return next(new BadRequestError('One or more items do not exist'));
@@ -55,11 +57,10 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
     const orderId = faker.string.uuid();
 
-    res.status(201).send({
+    return res.status(201).send({
       id: orderId,
-      total: productsTotal
-    })
-
+      total: productsTotal,
+    });
   } catch (error) {
     if (error instanceof MongooseError.ValidationError) {
       return next(new BadRequestError(error.message));
@@ -67,6 +68,8 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     if (error instanceof Error && error.message.includes('E11000')) {
       return next(new ConflictError('Duplicate field value error'));
     }
-    next(new InternalServerError(error instanceof Error ? error.message : 'Unknown error occurred'));
+    return next(new InternalServerError(error instanceof Error ? error.message : 'Unknown error occurred'));
   }
 };
+
+export default createOrder;

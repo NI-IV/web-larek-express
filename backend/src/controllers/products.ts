@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Product from '../models/product';
-import InternalServerError from "../errors/internal-server-error";
-import BadRequestError from "../errors/bad-request-error";
+import InternalServerError from '../errors/internal-server-error';
+import BadRequestError from '../errors/bad-request-error';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getAllProducts = async (req: Request, res: Response, next: NextFunction) => {
@@ -9,7 +9,7 @@ export const getAllProducts = async (req: Request, res: Response, next: NextFunc
     const products = await Product.find({});
     res.status(200).send({ items: products, total: products.length });
   } catch (error) {
-    //res.status(500).send({ message: 'Error getting products' });
+    // res.status(500).send({ message: 'Error getting products' });
     next(new InternalServerError(error instanceof Error ? error.message : 'Error getting products'));
   }
 };

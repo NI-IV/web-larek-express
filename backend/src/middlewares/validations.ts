@@ -7,8 +7,8 @@ export const createOrderValidation = celebrate({
     phone: Joi.string().required(),
     address: Joi.string().required(),
     total: Joi.number().required(),
-    items: Joi.array().items(Joi.string().required()).min(1).required()
-  })
+    items: Joi.array().items(Joi.string().required()).min(1).required(),
+  }),
 });
 
 export const createProductValidation = celebrate({
@@ -21,5 +21,5 @@ export const createProductValidation = celebrate({
     category: Joi.string().required(),
     description: Joi.string().optional(),
     price: Joi.number().optional().allow(null),
-  })
+  }),
 });
