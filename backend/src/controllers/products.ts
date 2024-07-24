@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import Product from '../models/product';
 import InternalServerError from '../errors/internal-server-error';
 import BadRequestError from '../errors/bad-request-error';
+import ConflictError from "../errors/conflict-error";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getAllProducts = async (req: Request, res: Response, next: NextFunction) => {
@@ -23,11 +24,15 @@ export const createProduct = (req: Request, res: Response, next: NextFunction) =
   if (!title || !image.fileName || !image.originalName || !category) {
     return next(new BadRequestError('No required fields'));
   }
+
   return Product.create({
     title, image, category, description, price,
   })
     .then((product) => res.status(201).json(product))
     .catch((error) => {
+      if (error instanceof Error && error.message.includes('E11000')) {
+        return next(new ConflictError('Duplicate field value error'));
+      }
       next(new BadRequestError(error instanceof Error ? error.message : 'The product was not created'));
     });
 };
