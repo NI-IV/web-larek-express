@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import express from 'express';
 import productsRouter from './routes/products';
 import ordersRouter from './routes/orders';
+import errorHandler from "./middlewares/error-handler";
+import notFoundHandler from "./middlewares/not-found-handler";
 
 const PORT = process.env.PORT || 3000;
 const { DB_ADDRESS } = process.env;
@@ -30,6 +32,9 @@ mongoose.connect(DB_ADDRESS)
 
 app.use('/product', productsRouter);
 app.use('/order', ordersRouter);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
