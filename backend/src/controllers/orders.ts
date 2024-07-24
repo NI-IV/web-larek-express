@@ -14,6 +14,7 @@ const isValidPhone = (phone: string) => /^\+7\d{10}$/.test(phone);
 
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   const { payment, email, phone, address, total, items } = req.body;
+  const phoneFormated: string = phone.replace(/[^\d+]/g, '');
 
   try {
     //Валидация входных данных
@@ -23,8 +24,8 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     if (!isValidEmail(email)) {
       return next(new BadRequestError('Invalid email'));
     }
-    if (!isValidPhone(phone)) {
-      return next(new BadRequestError('Invalid phone number'));
+    if (!isValidPhone(phoneFormated)) {
+      return next(new BadRequestError(`Invalid phone number`));
     }
     if (!address) {
       return next(new BadRequestError('Address is required'));
