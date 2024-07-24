@@ -17,7 +17,6 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
   const phoneFormated: string = phone.replace(/[^\d+]/g, '');
 
   try {
-    //Валидация входных данных
     if (!['card', 'online'].includes(payment)) {
       return next(new BadRequestError('Invalid payment method'));
     }

@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import mongoose from 'mongoose';
 import express from 'express';
+import { errors as celebrateErrors } from 'celebrate';
 import productsRouter from './routes/products';
 import ordersRouter from './routes/orders';
 import errorHandler from "./middlewares/error-handler";
@@ -34,6 +35,7 @@ app.use('/product', productsRouter);
 app.use('/order', ordersRouter);
 
 app.use(notFoundHandler);
+app.use(celebrateErrors());
 app.use(errorHandler);
 
 app.listen(PORT, () => {
